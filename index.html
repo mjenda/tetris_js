@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tetris</title>
+  <style>
+    body      { font-family: Helvetica, sans-serif; }
+    #canvas   { display: inline-block; vertical-align: top; box-shadow: 2px 2px 2px #999; border: 1px solid #333;}
+  </style>
+</head>
+
+<body>
+  <div id="tetris">
+    <canvas id="canvas" width="400" height="800"></canvas>
+  </div>
+
+<script>
+    function get(id) {
+        return document.getElementById(id);
+    }
+
+    function getContext() {
+        return get('canvas').getContext('2d');
+    }
+
+    function drawSquare(startX, startY, size) {
+        getContext().rect(startX,startY,size,size);
+        getContext().fillStyle = "green";
+        getContext().lineWidth = 1;
+        getContext().fill();
+        getContext().stroke();
+    }
+
+    function drawBox(boxIndexX, boxIndexY) {
+        drawSquare(boxIndexX*40, boxIndexY*40, 40);
+    }
+
+    function drawL(boxIndexX, boxIndexY) {
+        drawBox(boxIndexX, boxIndexY);
+        drawBox(boxIndexX, boxIndexY+1);
+        drawBox(boxIndexX+1, boxIndexY+1);
+        drawBox(boxIndexX+2, boxIndexY+1);
+    }
+
+    function drawS(boxIndexX, boxIndexY) {
+        drawBox(boxIndexX, boxIndexY);
+        drawBox(boxIndexX, boxIndexY+1);
+        drawBox(boxIndexX+1, boxIndexY+1);
+        drawBox(boxIndexX+1, boxIndexY+2);
+    }
+
+    drawL(2,4);
+    drawS(6,6);
+
+
+</script>
+</body>
+</html>
