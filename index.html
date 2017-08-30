@@ -3,8 +3,8 @@
 <head>
   <title>Tetris</title>
   <style>
-    body      { font-family: Helvetica, sans-serif; }
-    #canvas   { display: inline-block; vertical-align: top; box-shadow: 2px 2px 2px #999; border: 1px solid #333;}
+    body { font-family: Helvetica, sans-serif; }
+    #canvas { display: inline-block; vertical-align: top; box-shadow: 2px 2px 2px #999; border: 1px solid #333;}
   </style>
 </head>
 
@@ -18,38 +18,110 @@
         return document.getElementById(id);
     }
 
+    function getCanvas() {
+        return get('canvas');
+    }
+
     function getContext() {
-        return get('canvas').getContext('2d');
+        return getCanvas().getContext('2d');
     }
 
-    function drawSquare(startX, startY, size) {
-        getContext().rect(startX,startY,size,size);
-        getContext().fillStyle = "green";
-        getContext().lineWidth = 1;
-        getContext().fill();
-        getContext().stroke();
+    // function drawL(boxIndexX, boxIndexY) {
+    //     drawBox(boxIndexX, boxIndexY);
+    //     drawBox(boxIndexX, boxIndexY+1);
+    //     drawBox(boxIndexX+1, boxIndexY+1);
+    //     drawBox(boxIndexX+2, boxIndexY+1);
+    // }
+    //
+    // function drawS(boxIndexX, boxIndexY) {
+    //     drawBox(boxIndexX, boxIndexY);
+    //     drawBox(boxIndexX, boxIndexY+1);
+    //     drawBox(boxIndexX+1, boxIndexY+1);
+    //     drawBox(boxIndexX+1, boxIndexY+2);
+    // }
+
+    //drawL(2,4);
+    //drawS(6,6);
+
+    class Tile {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+        }
+        moveLeft() {
+            this.x = this.x - 1;
+        }
+        moveRight() {
+            this.x = this.x + 1;
+        }
+        moveDown() {
+            this.y = this.y + 1;
+        }
     }
 
-    function drawBox(boxIndexX, boxIndexY) {
-        drawSquare(boxIndexX*40, boxIndexY*40, 40);
+    class Block {
+        constructor() {
+            this.tiles = [];
+        }
+
+        moveLeft() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                this.tiles[i].moveLeft();
+            }
+        }
+        moveRight() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                this.tiles[i].moveRight();
+            }
+        }
+        moveDown() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                this.tiles[i].moveDown();
+            }
+        }
     }
 
-    function drawL(boxIndexX, boxIndexY) {
-        drawBox(boxIndexX, boxIndexY);
-        drawBox(boxIndexX, boxIndexY+1);
-        drawBox(boxIndexX+1, boxIndexY+1);
-        drawBox(boxIndexX+2, boxIndexY+1);
+    class BlockS extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y,   color),
+                           new Tile(x,   y+1, color),
+                           new Tile(x+1, y+1, color),
+                           new Tile(x+1, y+2, color)];
+        }
     }
 
-    function drawS(boxIndexX, boxIndexY) {
-        drawBox(boxIndexX, boxIndexY);
-        drawBox(boxIndexX, boxIndexY+1);
-        drawBox(boxIndexX+1, boxIndexY+1);
-        drawBox(boxIndexX+1, boxIndexY+2);
+    class Painter {
+        drawSquare(startX, startY, size, color) {
+            getContext().rect(startX,startY,size,size);
+            getContext().fillStyle = color;
+            getContext().lineWidth = 1;
+            getContext().fill();
+            getContext().stroke();
+        }
+
+        drawBox(boxIndexX, boxIndexY, color) {
+            this.drawSquare(boxIndexX*40, boxIndexY*40, 40, color);
+        }
+
+        drawTile(tile) {
+            this.drawBox(tile.x, tile.y, tile.color);
+        }
+
+        drawStructure(structure) {
+            for (var i = 0; i < structure.tiles.length; ++i) {
+                this.drawTile(structure.tiles[i]);
+            }
+        }
+
+        static clearCanvas() {
+            getContext().clearRect(0, 0, getCanvas().width, getCanvas().height);
+        }
     }
 
-    drawL(2,4);
-    drawS(6,6);
+    var blockS = new BlockS(5,5, "blue")
+    new Painter().drawStructure(blockS);
 
 
 </script>
