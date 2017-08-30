@@ -137,6 +137,30 @@
             }
 
         }
+        moveLeftIfPossible(allBlocks) {
+            this.moveLeft();
+            for (var i = 0; i < allBlocks.length; ++i) {
+                if (allBlocks[i] != this) {
+                    if (this.isColidingWithOtherBlock(allBlocks[i])) {
+                        this.moveRight();
+                        return;
+                    }
+                }
+            }
+
+        }
+        moveRightIfPossible(allBlocks) {
+            this.moveRight();
+            for (var i = 0; i < allBlocks.length; ++i) {
+                if (allBlocks[i] != this) {
+                    if (this.isColidingWithOtherBlock(allBlocks[i])) {
+                        this.moveLeft();
+                        return;
+                    }
+                }
+            }
+
+        }
         touchedTheGround() {
             for (var i = 0; i < this.tiles.length; ++i) {
                 if (this.tiles[i].touchedTheGround()) {
@@ -232,7 +256,7 @@
                 return;
             }
             Painter.clearCanvas();
-            this.blocks[index].moveLeft();
+            this.blocks[index].moveLeftIfPossible(this.blocks);
             Painter.drawArray(this.blocks);
         }
 
@@ -241,7 +265,7 @@
                 return;
             }
             Painter.clearCanvas();
-            this.blocks[index].moveRight();
+            this.blocks[index].moveRightIfPossible(this.blocks);
             Painter.drawArray(this.blocks);
         }
     }
