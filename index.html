@@ -80,6 +80,9 @@
         moveDown() {
             this.y = this.y + 1;
         }
+        touchedTheGround() {
+            return (this.y + 1)*40 < getCanvas().height;
+        }
     }
 
     class Block {
@@ -98,9 +101,19 @@
             }
         }
         moveDown() {
-            for (var i = 0; i < this.tiles.length; ++i) {
-                this.tiles[i].moveDown();
+            if (this.touchedTheGround()) {
+                for (var i = 0; i < this.tiles.length; ++i) {
+                    this.tiles[i].moveDown();
+                }
             }
+        }
+        touchedTheGround() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                if (!this.tiles[i].touchedTheGround()) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -127,7 +140,7 @@
     class Game {
         constructor() {
             this.blocks = [new BlockS(1,1, "red"),
-                           new BlockL(5,5, "blue")];
+                           new BlockL(5,17, "blue")];
             Painter.drawArray(this.blocks);
         }
         moveAndRedraw(index) {
