@@ -130,6 +130,9 @@
     Painter.drawArray(blocks);
 
     function moveAndRedrawAll(index) {
+        if (index >= blocks.length) {
+            return;
+        }
         Painter.clearCanvas();
         blocks[index].moveDown();
         Painter.drawArray(blocks);
