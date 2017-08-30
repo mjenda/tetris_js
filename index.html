@@ -81,7 +81,13 @@
             this.y = this.y + 1;
         }
         touchedTheGround() {
-            return (this.y + 1)*40 < getCanvas().height;
+            return (this.y + 1)*40 >= getCanvas().height;
+        }
+        touchedTheRightBorder() {
+            return (this.x + 1)*40 >= getCanvas().width;
+        }
+        touchedTheLeftBorder() {
+            return this.x - 1 < 0;
         }
     }
 
@@ -91,17 +97,21 @@
         }
 
         moveLeft() {
-            for (var i = 0; i < this.tiles.length; ++i) {
-                this.tiles[i].moveLeft();
+            if (!this.touchedTheLeftBorder()) {
+                for (var i = 0; i < this.tiles.length; ++i) {
+                    this.tiles[i].moveLeft();
+                }
             }
         }
         moveRight() {
-            for (var i = 0; i < this.tiles.length; ++i) {
-                this.tiles[i].moveRight();
+            if (!this.touchedTheRightBorder()) {
+                for (var i = 0; i < this.tiles.length; ++i) {
+                    this.tiles[i].moveRight();
+                }
             }
         }
         moveDown() {
-            if (this.touchedTheGround()) {
+            if (!this.touchedTheGround()) {
                 for (var i = 0; i < this.tiles.length; ++i) {
                     this.tiles[i].moveDown();
                 }
@@ -109,11 +119,27 @@
         }
         touchedTheGround() {
             for (var i = 0; i < this.tiles.length; ++i) {
-                if (!this.tiles[i].touchedTheGround()) {
-                    return false;
+                if (this.tiles[i].touchedTheGround()) {
+                    return true;
                 }
             }
-            return true;
+            return false;
+        }
+        touchedTheRightBorder() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                if (this.tiles[i].touchedTheRightBorder()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        touchedTheLeftBorder() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                if (this.tiles[i].touchedTheLeftBorder()) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -143,12 +169,30 @@
                            new BlockL(5,17, "blue")];
             Painter.drawArray(this.blocks);
         }
-        moveAndRedraw(index) {
+        moveDownAndRedraw(index) {
             if (index >= this.blocks.length) {
                 return;
             }
             Painter.clearCanvas();
             this.blocks[index].moveDown();
+            Painter.drawArray(this.blocks);
+        }
+
+        moveLeftAndRedraw(index) {
+            if (index >= this.blocks.length) {
+                return;
+            }
+            Painter.clearCanvas();
+            this.blocks[index].moveLeft();
+            Painter.drawArray(this.blocks);
+        }
+
+        moveRightAndRedraw(index) {
+            if (index >= this.blocks.length) {
+                return;
+            }
+            Painter.clearCanvas();
+            this.blocks[index].moveRight();
             Painter.drawArray(this.blocks);
         }
     }
