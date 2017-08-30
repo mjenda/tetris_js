@@ -80,6 +80,9 @@
         moveDown() {
             this.y = this.y + 1;
         }
+        moveUp() {
+            this.y = this.y - 1;
+        }
         touchedTheGround() {
             return (this.y + 1)*40 >= getCanvas().height;
         }
@@ -117,6 +120,23 @@
                 }
             }
         }
+        moveUp() {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                this.tiles[i].moveUp();
+            }
+        }
+        moveDownIfPossible(allBlocks) {
+            this.moveDown();
+            for (var i = 0; i < allBlocks.length; ++i) {
+                if (allBlocks[i] != this) {
+                    if (this.isColidingWithOtherBlock(allBlocks[i])) {
+                        this.moveUp();
+                        return;
+                    }
+                }
+            }
+
+        }
         touchedTheGround() {
             for (var i = 0; i < this.tiles.length; ++i) {
                 if (this.tiles[i].touchedTheGround()) {
@@ -137,6 +157,17 @@
             for (var i = 0; i < this.tiles.length; ++i) {
                 if (this.tiles[i].touchedTheLeftBorder()) {
                     return true;
+                }
+            }
+            return false;
+        }
+        isColidingWithOtherBlock(otherBlock) {
+            for (var i = 0; i < this.tiles.length; ++i) {
+                for (var j = 0; j < otherBlock.tiles.length; ++j) {
+                    if (this.tiles[i].x == otherBlock.tiles[j].x &&
+                        this.tiles[i].y == otherBlock.tiles[j].y) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -192,7 +223,7 @@
                 return;
             }
             Painter.clearCanvas();
-            this.blocks[index].moveDown();
+            this.blocks[index].moveDownIfPossible(this.blocks);
             Painter.drawArray(this.blocks);
         }
 
