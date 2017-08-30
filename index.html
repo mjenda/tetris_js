@@ -26,22 +26,44 @@
         return getCanvas().getContext('2d');
     }
 
-    // function drawL(boxIndexX, boxIndexY) {
-    //     drawBox(boxIndexX, boxIndexY);
-    //     drawBox(boxIndexX, boxIndexY+1);
-    //     drawBox(boxIndexX+1, boxIndexY+1);
-    //     drawBox(boxIndexX+2, boxIndexY+1);
-    // }
-    //
-    // function drawS(boxIndexX, boxIndexY) {
-    //     drawBox(boxIndexX, boxIndexY);
-    //     drawBox(boxIndexX, boxIndexY+1);
-    //     drawBox(boxIndexX+1, boxIndexY+1);
-    //     drawBox(boxIndexX+1, boxIndexY+2);
-    // }
+    class Painter {
+        static drawSquare(startX, startY, size, color) {
+            getContext().beginPath();
+            getContext().rect(startX,startY,size,size);
+            getContext().fillStyle = color;
+            getContext().lineWidth = 1;
+            getContext().fill();
+            getContext().stroke();
+            getContext().closePath();
+        }
 
-    //drawL(2,4);
-    //drawS(6,6);
+        static drawBox(boxIndexX, boxIndexY, color) {
+            this.drawSquare(boxIndexX*40, boxIndexY*40, 40, color);
+        }
+
+        static drawTile(tile) {
+            this.drawBox(tile.x, tile.y, tile.color);
+        }
+
+        static drawStructure(structure) {
+            for (var i = 0; i < structure.tiles.length; ++i) {
+                this.drawTile(structure.tiles[i]);
+            }
+        }
+
+        static drawArray(array) {
+            for (var i = 0; i < array.length; ++i) {
+                this.drawStructure(array[i]);
+            }
+        }
+
+        static clearCanvas() {
+            getContext().clearRect(0, 0, getCanvas().width, getCanvas().height);
+            var w = getCanvas().width;
+            getCanvas().width = 1;
+            getCanvas().width = w;
+        }
+    }
 
     class Tile {
         constructor(x, y, color) {
@@ -92,36 +114,26 @@
         }
     }
 
-    class Painter {
-        drawSquare(startX, startY, size, color) {
-            getContext().rect(startX,startY,size,size);
-            getContext().fillStyle = color;
-            getContext().lineWidth = 1;
-            getContext().fill();
-            getContext().stroke();
-        }
-
-        drawBox(boxIndexX, boxIndexY, color) {
-            this.drawSquare(boxIndexX*40, boxIndexY*40, 40, color);
-        }
-
-        drawTile(tile) {
-            this.drawBox(tile.x, tile.y, tile.color);
-        }
-
-        drawStructure(structure) {
-            for (var i = 0; i < structure.tiles.length; ++i) {
-                this.drawTile(structure.tiles[i]);
-            }
-        }
-
-        static clearCanvas() {
-            getContext().clearRect(0, 0, getCanvas().width, getCanvas().height);
+    class BlockL extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y,   color),
+                           new Tile(x,   y+1, color),
+                           new Tile(x+1, y+1, color),
+                           new Tile(x+2, y+1, color)];
         }
     }
 
-    var blockS = new BlockS(5,5, "blue")
-    new Painter().drawStructure(blockS);
+    var blocks = [new BlockS(1,1, "red"),
+                  new BlockL(5,5, "blue")];
+
+    Painter.drawArray(blocks);
+
+    function moveAndRedrawAll(index) {
+        Painter.clearCanvas();
+        blocks[index].moveDown();
+        Painter.drawArray(blocks);
+    }
 
 
 </script>
