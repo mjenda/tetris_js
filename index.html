@@ -124,20 +124,23 @@
         }
     }
 
-    var blocks = [new BlockS(1,1, "red"),
-                  new BlockL(5,5, "blue")];
-
-    Painter.drawArray(blocks);
-
-    function moveAndRedrawAll(index) {
-        if (index >= blocks.length) {
-            return;
+    class Game {
+        constructor() {
+            this.blocks = [new BlockS(1,1, "red"),
+                           new BlockL(5,5, "blue")];
+            Painter.drawArray(this.blocks);
         }
-        Painter.clearCanvas();
-        blocks[index].moveDown();
-        Painter.drawArray(blocks);
+        moveAndRedraw(index) {
+            if (index >= this.blocks.length) {
+                return;
+            }
+            Painter.clearCanvas();
+            this.blocks[index].moveDown();
+            Painter.drawArray(this.blocks);
+        }
     }
 
+    var game = new Game();
 
 </script>
 </body>
