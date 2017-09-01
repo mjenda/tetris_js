@@ -399,6 +399,7 @@
             if (this.activeBlock.touchedTheGround(this.bottomLayer)) {
                 Painter.clearCanvas();
                 this.morphBlockIntoGround();
+                this.clearLineIfPossible();
                 this.spawnNewActiveBlock();
                 this.redraw();
                 return;
@@ -433,7 +434,13 @@
             }
         }
         clearLineIfPossible() {
-
+            for (var i = 0; i < 20; i++) {
+                var count = this.bottomLayer.filter(function(a){return a.y == i}).length;
+                if (count == 10) {
+                    this.bottomLayer = this.bottomLayer.filter(function(item) {return item.y != i; });
+                    this.bottomLayer.forEach(function(item) { if (item.y < i) item.moveDown();});
+                }
+            }
         }
         spawnNewActiveBlock() {
             this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
