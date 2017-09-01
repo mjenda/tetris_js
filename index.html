@@ -53,7 +53,7 @@
 
         static drawArray(array) {
             for (var i = 0; i < array.length; ++i) {
-                this.drawStructure(array[i]);
+                this.drawTile(array[i]);
             }
         }
 
@@ -141,28 +141,28 @@
                 console.log("After " + (this.tiles[i].x-3) + " " + this.tiles[i].y);
             }
         }
-        moveDownIfPossible(allBlocks) {
+        moveDownIfPossible(bottomLayer) {
             this.moveDown();
-            for (var i = 0; i < allBlocks.length; ++i) {
-                if (this.isColidingWithOtherBlock(allBlocks[i])) {
+            for (var i = 0; i < bottomLayer.length; ++i) {
+                if (this.isColidingWithBottomLayer(bottomLayer)) {
                     this.moveUp();
                     return;
                 }
             }
         }
-        moveLeftIfPossible(allBlocks) {
+        moveLeftIfPossible(bottomLayer) {
             this.moveLeft();
-            for (var i = 0; i < allBlocks.length; ++i) {
-                if (this.isColidingWithOtherBlock(allBlocks[i])) {
+            for (var i = 0; i < bottomLayer.length; ++i) {
+                if (this.isColidingWithBottomLayer(bottomLayer)) {
                     this.moveRight();
                     return;
                 }
             }
         }
-        moveRightIfPossible(allBlocks) {
+        moveRightIfPossible(bottomLayer) {
             this.moveRight();
-            for (var i = 0; i < allBlocks.length; ++i) {
-                if (this.isColidingWithOtherBlock(allBlocks[i])) {
+            for (var i = 0; i < bottomLayer.length; ++i) {
+                if (this.isColidingWithBottomLayer(bottomLayer)) {
                     this.moveLeft();
                     return;
                 }
@@ -170,14 +170,9 @@
         }
         touchedTheBottomLayer(bottomLayer) {
             this.moveDown();
-            for (var i = 0; i < bottomLayer.length; ++i) {
-                if (this.isColidingWithOtherBlock(bottomLayer[i])) {
-                    this.moveUp();
-                    return true;
-                }
-            }
+            var result = this.isColidingWithBottomLayer(bottomLayer)
             this.moveUp();
-            return false;
+            return result;
         }
 
         touchedTheGround(bottomLayer) {
@@ -207,11 +202,11 @@
             }
             return false;
         }
-        isColidingWithOtherBlock(otherBlock) {
+        isColidingWithBottomLayer(bottomLayer) {
             for (var i = 0; i < this.tiles.length; ++i) {
-                for (var j = 0; j < otherBlock.tiles.length; ++j) {
-                    if (this.tiles[i].x == otherBlock.tiles[j].x &&
-                        this.tiles[i].y == otherBlock.tiles[j].y) {
+                for (var j = 0; j < bottomLayer.length; ++j) {
+                    if (this.tiles[i].x == bottomLayer[j].x &&
+                        this.tiles[i].y == bottomLayer[j].y) {
                         return true;
                     }
                 }
@@ -397,12 +392,15 @@
         constructor() {
             this.keyboardHandler = new KeyboardHandler(this);
             this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
-            this.bottomLayer = [BlockBuilder.buildL(5,17, "blue")];
+            this.bottomLayer = [];
             this.redraw();
         }
         moveDownAndRedraw() {
             if (this.activeBlock.touchedTheGround(this.bottomLayer)) {
+                Painter.clearCanvas();
+                this.morphBlockIntoGround();
                 this.spawnNewActiveBlock();
+                this.redraw();
                 return;
             }
 
@@ -429,11 +427,16 @@
             this.activeBlock.rotate()
             this.redraw();
         }
+        morphBlockIntoGround() {
+            for (var i = 0; i < this.activeBlock.tiles.length; ++i) {
+                this.bottomLayer.push(this.activeBlock.tiles[i]);
+            }
+        }
+        clearLineIfPossible() {
 
+        }
         spawnNewActiveBlock() {
-            this.bottomLayer.push(this.activeBlock);
             this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
-            this.redraw();
         }
         redraw() {
             Painter.drawArray(this.bottomLayer);
