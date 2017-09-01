@@ -97,6 +97,12 @@
     class Block {
         constructor() {
             this.tiles = [];
+            this.possibleRotations = 4;
+            this.currentRotation = 0;
+            this.rotation = [[[0,0,0,0],[0,0,0,0]],
+                             [[0,0,0,0],[0,0,0,0]],
+                             [[0,0,0,0],[0,0,0,0]],
+                             [[0,0,0,0],[0,0,0,0]]];
         }
 
         moveLeft() {
@@ -123,6 +129,16 @@
         moveUp() {
             for (var i = 0; i < this.tiles.length; ++i) {
                 this.tiles[i].moveUp();
+            }
+        }
+        rotate() {
+            this.currentRotation = (this.currentRotation + 1) % this.possibleRotations;
+            for (var i = 0; i < this.tiles.length; ++i) {
+                console.log("tiles ", (i+1));
+                console.log("Before " + (this.tiles[i].x-3) + " " + this.tiles[i].y);
+                this.tiles[i].x = this.tiles[i].x + this.rotation[this.currentRotation][0][i];
+                this.tiles[i].y = this.tiles[i].y + this.rotation[this.currentRotation][1][i];
+                console.log("After " + (this.tiles[i].x-3) + " " + this.tiles[i].y);
             }
         }
         moveDownIfPossible(allBlocks) {
@@ -207,10 +223,14 @@
     class BlockS extends Block {
         constructor (x, y, color) {
             super();
-            this.tiles = [ new Tile(x+1, y,   color),
-                           new Tile(x+2, y, color),
-                           new Tile(x,   y+1, color),
-                           new Tile(x+1, y+1, color)];
+            this.tiles = [ new Tile(x+1, y+1,   color),
+                           new Tile(x+2, y+1, color),
+                           new Tile(x,   y+2, color),
+                           new Tile(x+1, y+2, color)];
+            this.rotation = [[[-1,0,-1,0],[0,-1,2,1]],
+                             [[-1,-2,1,0],[0,-1,0,-1]],
+                             [[1,2,-1,0],[-1,0,-1,0]],
+                             [[1,0,1,0],[1,2,-1,0]]];
         }
     }
 
@@ -350,6 +370,9 @@
                 else if (event.keyCode == 40) {
                     game.moveDownAndRedraw();
                 }
+                else if (event.keyCode == 38) {
+                    game.rotate();
+                }
             });
         }
     }
@@ -381,6 +404,13 @@
         moveRightAndRedraw() {
             Painter.clearCanvas();
             this.activeBlock.moveRightIfPossible(this.bottomLayer);
+            this.redraw();
+        }
+
+        rotate() {
+            console.log("Rotate");
+            Painter.clearCanvas();
+            this.activeBlock.rotate()
             this.redraw();
         }
 
