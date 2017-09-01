@@ -207,10 +207,20 @@
     class BlockS extends Block {
         constructor (x, y, color) {
             super();
-            this.tiles = [ new Tile(x,   y,   color),
+            this.tiles = [ new Tile(x+1, y,   color),
+                           new Tile(x+2, y, color),
                            new Tile(x,   y+1, color),
+                           new Tile(x+1, y+1, color)];
+        }
+    }
+
+    class BlockZ extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y,   color),
+                           new Tile(x+1, y,   color),
                            new Tile(x+1, y+1, color),
-                           new Tile(x+1, y+2, color)];
+                           new Tile(x+2, y+1, color)];
         }
     }
 
@@ -221,6 +231,57 @@
                            new Tile(x,   y+1, color),
                            new Tile(x+1, y+1, color),
                            new Tile(x+2, y+1, color)];
+        }
+    }
+
+    class BlockI extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y, color),
+                           new Tile(x+1, y, color),
+                           new Tile(x+2, y, color),
+                           new Tile(x+3, y, color)];
+        }
+    }
+
+    class BlockO extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y,   color),
+                           new Tile(x+1, y,   color),
+                           new Tile(x,   y+1, color),
+                           new Tile(x+1, y+1, color)];
+        }
+    }
+
+    class BlockT extends Block {
+        constructor (x, y, color) {
+            super();
+            this.tiles = [ new Tile(x,   y,   color),
+                           new Tile(x+1, y,   color),
+                           new Tile(x+2, y,   color),
+                           new Tile(x+1, y+1, color)];
+        }
+    }
+
+    class BlockBuilder {
+        static buildS(x, y, color) {
+            return new BlockS(x, y, color);
+        }
+        static buildZ(x, y, color) {
+            return new BlockZ(x, y, color);
+        }
+        static buildL(x, y, color) {
+            return new BlockL(x, y, color);
+        }
+        static buildI(x, y, color) {
+            return new BlockI(x, y, color);
+        }
+        static buildO(x, y, color) {
+            return new BlockO(x, y, color);
+        }
+        static buildT(x, y, color) {
+            return new BlockT(x, y, color);
         }
     }
 
@@ -244,8 +305,8 @@
     class Game {
         constructor() {
             this.keyboardHandler = new KeyboardHandler(this);
-            this.activeBlock = new BlockS(1,1, "red");
-            this.bottomLayer = [new BlockL(5,18, "blue")];
+            this.activeBlock = BlockBuilder.buildZ(1,1, "red");
+            this.bottomLayer = [BlockBuilder.buildL(5,18, "blue")];
             this.redraw();
         }
         moveDownAndRedraw() {
@@ -273,7 +334,7 @@
 
         spawnNewActiveBlock() {
             this.bottomLayer.push(this.activeBlock);
-            this.activeBlock = new BlockS(1,1, "red");
+            this.activeBlock = BlockBuilder.buildS(1,1, "red");
             this.redraw();
         }
         redraw() {
