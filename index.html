@@ -142,7 +142,6 @@
                     return;
                 }
             }
-
         }
         moveRightIfPossible(allBlocks) {
             this.moveRight();
@@ -152,10 +151,21 @@
                     return;
                 }
             }
-
         }
-        touchedTheGround() {
-            return this.touchedTheBottomBorder();
+        touchedTheBottomLayer(bottomLayer) {
+            this.moveDown();
+            for (var i = 0; i < bottomLayer.length; ++i) {
+                if (this.isColidingWithOtherBlock(bottomLayer[i])) {
+                    this.moveUp();
+                    return true;
+                }
+            }
+            this.moveUp();
+            return false;
+        }
+
+        touchedTheGround(bottomLayer) {
+            return this.touchedTheBottomBorder() || this.touchedTheBottomLayer(bottomLayer);
         }
         touchedTheBottomBorder() {
             for (var i = 0; i < this.tiles.length; ++i) {
@@ -236,30 +246,37 @@
             this.keyboardHandler = new KeyboardHandler(this);
             this.activeBlock = new BlockS(1,1, "red");
             this.bottomLayer = [new BlockL(5,18, "blue")];
-            Painter.drawArray(this.bottomLayer);
-            Painter.drawStructure(this.activeBlock);
+            this.redraw();
         }
         moveDownAndRedraw() {
-            if (this.activeBlock.touchedTheGround()) {
-                console.log("Touched the ground!");
+            if (this.activeBlock.touchedTheGround(this.bottomLayer)) {
+                this.spawnNewActiveBlock();
+                return;
             }
 
             Painter.clearCanvas();
             this.activeBlock.moveDownIfPossible(this.bottomLayer);
-            Painter.drawArray(this.bottomLayer);
-            Painter.drawStructure(this.activeBlock);
+            this.redraw();
         }
 
         moveLeftAndRedraw() {
             Painter.clearCanvas();
             this.activeBlock.moveLeftIfPossible(this.bottomLayer);
-            Painter.drawArray(this.bottomLayer);
-            Painter.drawStructure(this.activeBlock);
+            this.redraw();
         }
 
         moveRightAndRedraw() {
             Painter.clearCanvas();
             this.activeBlock.moveRightIfPossible(this.bottomLayer);
+            this.redraw();
+        }
+
+        spawnNewActiveBlock() {
+            this.bottomLayer.push(this.activeBlock);
+            this.activeBlock = new BlockS(1,1, "red");
+            this.redraw();
+        }
+        redraw() {
             Painter.drawArray(this.bottomLayer);
             Painter.drawStructure(this.activeBlock);
         }
