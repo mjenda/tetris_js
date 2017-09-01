@@ -285,6 +285,58 @@
         }
     }
 
+    class RandomizedBlockPicker {
+        static pickBlock(x, y) {
+            return this.pickType(x, y, this.pickColor());
+        }
+        static pickType(x, y, color) {
+            var randomBlockNumber = Math.floor((Math.random() * 10) + 1) % 6;
+            switch(randomBlockNumber) {
+                case 0:
+                    return BlockBuilder.buildS(x, y, color);
+                    break;
+                case 1:
+                    return BlockBuilder.buildZ(x, y, color);
+                    break;
+                case 2:
+                    return BlockBuilder.buildL(x, y, color);
+                    break;
+                case 3:
+                    return BlockBuilder.buildI(x, y, color);
+                    break;
+                case 4:
+                    return BlockBuilder.buildO(x, y, color);
+                    break;
+                case 5:
+                    return BlockBuilder.buildT(x, y, color);
+                    break;
+            }
+        }
+        static pickColor() {
+            var randomColorNumber = Math.floor((Math.random() * 10) + 1) % 6;
+            switch(randomColorNumber) {
+                case 0:
+                    return "red";
+                    break;
+                case 1:
+                    return "blue";
+                    break;
+                case 2:
+                    return "yellow";
+                    break;
+                case 3:
+                    return "green";
+                    break;
+                case 4:
+                    return "purple";
+                    break;
+                case 5:
+                    return "orange";
+                    break;
+            }
+        }
+    }
+
     class KeyboardHandler {
         constructor(game) {
             this.game = game;
@@ -305,7 +357,7 @@
     class Game {
         constructor() {
             this.keyboardHandler = new KeyboardHandler(this);
-            this.activeBlock = BlockBuilder.buildZ(1,1, "red");
+            this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
             this.bottomLayer = [BlockBuilder.buildL(5,18, "blue")];
             this.redraw();
         }
@@ -334,7 +386,7 @@
 
         spawnNewActiveBlock() {
             this.bottomLayer.push(this.activeBlock);
-            this.activeBlock = BlockBuilder.buildS(1,1, "red");
+            this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
             this.redraw();
         }
         redraw() {
