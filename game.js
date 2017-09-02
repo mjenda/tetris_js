@@ -406,6 +406,7 @@ class Game {
     moveDownAndRedraw() {
         if (this.activeBlock.touchedTheGround(this.bottomLayer)) {
             this.gameCanvasPainter.clearCanvas();
+            this.infoCanvasPainter.clearCanvas();
             this.morphBlockIntoGround();
             this.clearLineIfPossible();
             this.gameOverOrSpawnNewActiveBlock();
@@ -460,7 +461,10 @@ class Game {
     }
     spawnNewActiveBlock() {
         this.activeBlock = this.nextActiveBlock;
-        this.nextActiveBlock = RandomizedBlockPicker.pickBlock(3,0);
+        this.activeBlock.moveRight();
+        this.activeBlock.moveRight();
+        this.activeBlock.moveRight();
+        this.nextActiveBlock = RandomizedBlockPicker.pickBlock(0,0);
     }
     getHighestLayerElemY() {
          return this.bottomLayer.reduce((min, p) => p.y < min ? p.y : min, this.bottomLayer[0].y);
@@ -468,6 +472,7 @@ class Game {
     redraw() {
         this.gameCanvasPainter.drawArray(this.bottomLayer);
         if (! this.isGameOver()) {
+             this.infoCanvasPainter.drawStructure(this.nextActiveBlock);
              this.gameCanvasPainter.drawStructure(this.activeBlock);
         }
     }
@@ -477,7 +482,7 @@ class Game {
     startNewGame() {
          this.gameCanvasPainter.clearCanvas();
          this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
-         this.nextActiveBlock = RandomizedBlockPicker.pickBlock(3,0);
+         this.nextActiveBlock = RandomizedBlockPicker.pickBlock(0,0);
          this.bottomLayer = [];
          this.redraw();
     }
