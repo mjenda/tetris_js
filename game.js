@@ -2,50 +2,55 @@ function get(id) {
     return document.getElementById(id);
 }
 
-function getCanvas() {
-    return get('canvas');
-}
-
-function getContext() {
-    return getCanvas().getContext('2d');
+function getGameCanvas() {
+     return get("game");
 }
 
 class Painter {
-    static drawSquare(startX, startY, size, color) {
-        getContext().beginPath();
-        getContext().rect(startX,startY,size,size);
-        getContext().fillStyle = color;
-        getContext().lineWidth = 0.4;
-        getContext().fill();
-        getContext().stroke();
-        getContext().closePath();
+     constructor(id) {
+        this.id = id;
+    }
+    drawSquare(startX, startY, size, color) {
+        this.getContext().beginPath();
+        this.getContext().rect(startX,startY,size,size);
+        this.getContext().fillStyle = color;
+        this.getContext().lineWidth = 0.4;
+        this.getContext().fill();
+        this.getContext().stroke();
+        this.getContext().closePath();
     }
 
-    static drawBox(boxIndexX, boxIndexY, color) {
+    drawBox(boxIndexX, boxIndexY, color) {
         this.drawSquare(boxIndexX*40, boxIndexY*40, 40, color);
     }
 
-    static drawTile(tile) {
+    drawTile(tile) {
         this.drawBox(tile.x, tile.y, tile.color);
     }
 
-    static drawStructure(structure) {
+    drawStructure(structure) {
         for (var i = 0; i < structure.tiles.length; ++i) {
             this.drawTile(structure.tiles[i]);
         }
     }
 
-    static drawArray(array) {
+    drawArray(array) {
         for (var i = 0; i < array.length; ++i) {
             this.drawTile(array[i]);
         }
     }
 
-    static clearCanvas() {
-        getContext().clearRect(0, 0, getCanvas().width, getCanvas().height);
-        var w = getCanvas().width;
-        getCanvas().width = 1;
-        getCanvas().width = w;
+    clearCanvas() {
+        this.getContext().clearRect(0, 0, this.getCanvas().width, this.getCanvas().height);
+        var w = this.getCanvas().width;
+        this.getCanvas().width = 1;
+        this.getCanvas().width = w;
+    }
+    getContext() {
+        return this.getCanvas().getContext('2d');
+    }
+    getCanvas() {
+         return get(this.id);
     }
 }
 
@@ -68,10 +73,10 @@ class Tile {
         this.y = this.y - 1;
     }
     touchedTheBottomBorder() {
-        return (this.y + 1)*40 > getCanvas().height;
+        return (this.y + 1)*40 > getGameCanvas().height;
     }
     touchedTheRightBorder() {
-        return (this.x + 1)*40 > getCanvas().width;
+        return (this.x + 1)*40 > getGameCanvas().width;
     }
     touchedTheLeftBorder() {
         return this.x  < 0;
@@ -394,11 +399,13 @@ class KeyboardHandler {
 class Game {
     constructor() {
         this.keyboardHandler = new KeyboardHandler(this);
+        this.gameCanvasPainter = new Painter("game");
+        this.infoCanvasPainter = new Painter("info");
         this.startNewGame();
     }
     moveDownAndRedraw() {
         if (this.activeBlock.touchedTheGround(this.bottomLayer)) {
-            Painter.clearCanvas();
+            this.gameCanvasPainter.clearCanvas();
             this.morphBlockIntoGround();
             this.clearLineIfPossible();
             this.gameOverOrSpawnNewActiveBlock();
@@ -406,25 +413,25 @@ class Game {
             return;
         }
 
-        Painter.clearCanvas();
+        this.gameCanvasPainter.clearCanvas();
         this.activeBlock.moveDownIfPossible(this.bottomLayer);
         this.redraw();
     }
 
     moveLeftAndRedraw() {
-        Painter.clearCanvas();
+        this.gameCanvasPainter.clearCanvas();
         this.activeBlock.moveLeftIfPossible(this.bottomLayer);
         this.redraw();
     }
 
     moveRightAndRedraw() {
-        Painter.clearCanvas();
+        this.gameCanvasPainter.clearCanvas();
         this.activeBlock.moveRightIfPossible(this.bottomLayer);
         this.redraw();
     }
 
     rotateAndRedraw() {
-        Painter.clearCanvas();
+        this.gameCanvasPainter.clearCanvas();
         this.activeBlock.rotateIfPossible(this.bottomLayer);
         this.redraw();
     }
@@ -446,28 +453,31 @@ class Game {
          if (this.getHighestLayerElemY() <= 3) {
              console.log("Game over!");
              this.activeBlock = null;
+             this.nextActiveBlock = null;
              return;
          }
          this.spawnNewActiveBlock();
     }
     spawnNewActiveBlock() {
-        this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
+        this.activeBlock = this.nextActiveBlock;
+        this.nextActiveBlock = RandomizedBlockPicker.pickBlock(3,0);
     }
     getHighestLayerElemY() {
          return this.bottomLayer.reduce((min, p) => p.y < min ? p.y : min, this.bottomLayer[0].y);
     }
     redraw() {
-        Painter.drawArray(this.bottomLayer);
+        this.gameCanvasPainter.drawArray(this.bottomLayer);
         if (! this.isGameOver()) {
-             Painter.drawStructure(this.activeBlock);
+             this.gameCanvasPainter.drawStructure(this.activeBlock);
         }
     }
     isGameOver() {
          return this.activeBlock == null;
     }
     startNewGame() {
-         Painter.clearCanvas();
+         this.gameCanvasPainter.clearCanvas();
          this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
+         this.nextActiveBlock = RandomizedBlockPicker.pickBlock(3,0);
          this.bottomLayer = [];
          this.redraw();
     }
