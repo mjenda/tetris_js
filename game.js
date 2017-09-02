@@ -486,6 +486,23 @@ class Game {
          this.bottomLayer = [];
          this.redraw();
     }
+
 }
 
 var game = new Game();
+
+function run() {
+         var now = Date.now();
+         var last = now;
+         function frame() {
+            now = Date.now();
+            if ((now - last) >= 1000) {
+                 game.moveDownAndRedraw();
+                 last = now;
+            }
+            window.requestAnimationFrame(frame);
+         }
+         window.requestAnimationFrame(frame);
+    }
+
+run(game);
