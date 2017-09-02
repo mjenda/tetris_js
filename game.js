@@ -376,7 +376,11 @@ class KeyboardHandler {
     constructor(game) {
         this.game = game;
         document.addEventListener('keydown', function(event) {
-            if (game.isGameOver()) { return; }
+            if (game.isGameOver()) {
+                 if (event.keyCode == 13) {
+                      game.startNewGame();
+                 }
+                 return; }
             if(event.keyCode == 37) {
                game.moveLeftAndRedraw();
             }
@@ -492,17 +496,19 @@ class Game {
 var game = new Game();
 
 function run() {
-         var now = Date.now();
-         var last = now;
-         function frame() {
-            now = Date.now();
-            if ((now - last) >= 1000) {
+    var now = Date.now();
+    var last = now;
+    function frame() {
+       now = Date.now();
+       if ((now - last) >= 1000) {
+            if (!game.isGameOver()) {
                  game.moveDownAndRedraw();
-                 last = now;
             }
-            window.requestAnimationFrame(frame);
-         }
-         window.requestAnimationFrame(frame);
+            last = now;
+       }
+       window.requestAnimationFrame(frame);
     }
+    window.requestAnimationFrame(frame);
+}
 
 run(game);
