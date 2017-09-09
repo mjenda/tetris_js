@@ -485,6 +485,7 @@ class Game {
     }
     startNewGame() {
          this.gameCanvasPainter.clearCanvas();
+         this.infoCanvasPainter.clearCanvas();
          this.activeBlock = RandomizedBlockPicker.pickBlock(3,0);
          this.nextActiveBlock = RandomizedBlockPicker.pickBlock(0,0);
          this.bottomLayer = [];
